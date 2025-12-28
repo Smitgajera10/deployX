@@ -1,0 +1,55 @@
+version : "3.9"
+
+services:
+  api:
+    build: ./services/api
+    container_name: deployx-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    networks:
+      - deployx-net
+
+  runner:
+    build: ./services/runner
+    container_name: deployx-runner
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    networks:
+      - deployx-net
+
+
+  postgres:
+    image: postgres:15
+    container_name: deployx-postgres
+    environment:
+      POSTGRES_DB: deployx
+      POSTGRES_USER: deployx
+      POSTGRES_PASSWORD: deployx
+    ports:
+      - "5433:5432"
+    networks:
+      - deployx-net
+
+  
+  
+  redis:
+    image: redis:7
+    container_name: deployx-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - deployx-net
+      
+
+networks:
+  deployx-net:
