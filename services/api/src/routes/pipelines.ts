@@ -21,6 +21,17 @@ export async function pipelineRoutes(app: FastifyInstance) {
 
     const pipeline = pipelineResult.rows[0];
 
+    const repoResult = await app.db.query(
+      "SELECT git_url FROM repositories WHERE id=$1",
+      [repoId]
+    );
+
+    if (!repoResult.rows.length) {
+      throw new Error("Repository not found");
+    }
+
+    const repoUrl = repoResult.rows[0].git_url;
+
     // 4️⃣ Create jobs + enqueue them
     for (const step of steps) {
       const jobResult = await app.db.query(
@@ -35,7 +46,9 @@ export async function pipelineRoutes(app: FastifyInstance) {
 
       await jobQueue.add("run-job", {
         jobId: job.id,
+        repoUrl,
         command: step.run,
+        pipelineId: pipeline.id
       });
     }
 

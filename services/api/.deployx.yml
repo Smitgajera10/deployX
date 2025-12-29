@@ -1,8 +1,6 @@
 pipeline:
   steps:
-    - name: install
+    - name: Install
       run: npm install
-    - name: test
+    - name: Test
       run: npm test
-    - name: build
-      run: npm run build

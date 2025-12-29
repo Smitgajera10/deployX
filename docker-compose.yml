@@ -37,6 +37,8 @@ services:
       POSTGRES_PASSWORD: deployx
     ports:
       - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - deployx-net
 
@@ -53,3 +55,7 @@ services:
 
 networks:
   deployx-net:
+
+
+volumes:
+  postgres_data:
