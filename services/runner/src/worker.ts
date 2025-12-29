@@ -14,6 +14,14 @@ const db = new Pool({
   database: "deployx"
 });
 
+async function appendLog(jobId: string, log: string) {
+  await db.query(
+    "UPDATE jobs SET logs = COALESCE(logs,'') || $1 WHERE id=$2",
+    [log, jobId]
+  );
+}
+
+
 new Worker(
   "deployx-jobs",
   async job => {

@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 
-export function runCommand(
+export function runCommandStreaming(
     command : string,
     cwd : string,
     onLog : (log : string) => void
