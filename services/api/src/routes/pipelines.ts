@@ -2,6 +2,11 @@ import { FastifyInstance } from "fastify";
 import { parsePipeline } from "../utils/pipelineParser";
 import fs from "fs";
 import { jobQueue } from "../queue/jobQueue";
+import { FlowProducer } from "bullmq";
+
+const flowProducer = new FlowProducer({
+  connection: jobQueue.opts.connection
+});
 
 export async function pipelineRoutes(app: FastifyInstance) {
   app.post("/repos/:repoId/pipelines", async (req, res) => {
@@ -44,11 +49,23 @@ export async function pipelineRoutes(app: FastifyInstance) {
         throw new Error("Failed to create job row");
       }
 
-      await jobQueue.add("run-job", {
-        jobId: job.id,
-        repoUrl,
-        command: step.run,
-        pipelineId: pipeline.id
+      await flowProducer.add({
+        name: "pipeline",
+        queueName: "deployx-jobs",
+        data: {
+          pipelineId: pipeline.id,
+          repoUrl
+        },
+        children: steps.map((step: { run: any; }) => ({
+          name: "run-job",
+          queueName: "deployx-jobs",
+          data: {
+            pipelineId: pipeline.id,
+            repoUrl,
+            command: step.run,
+            jobId: job.id
+          }
+        }))
       });
     }
 
