@@ -1,16 +1,18 @@
 {
-  "name": "api",
+  "name": "deployx-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "DeployX CI/CD Platform - API Service",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev src/server.ts",
-    "build": "tsc"
+    "dev": "ts-node-dev --respawn src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["cicd", "deployment", "pipeline", "devops"],
+  "author": "DeployX Team",
+  "license": "MIT",
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/env": "^5.0.3",
